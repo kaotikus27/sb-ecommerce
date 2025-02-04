@@ -3,6 +3,7 @@ package com.ecommerce.sbecom.model;
 public class Category {
 
 
+
     private Long categoryId;
 
     private String categoryName;
