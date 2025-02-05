@@ -16,6 +16,7 @@ import java.util.List;
 
 
 @RestController
+@RequestMapping("/api")
 public class CategoryController {
 
 
@@ -28,8 +29,9 @@ public class CategoryController {
             this.categoryService = categoryService;
         }
 
-        //http://localhost:8080/api/public/categories
-    @GetMapping("api/public/categories")
+//  http://localhost:8080/api/public/categories
+//  @GetMapping("api/public/categories")
+    @RequestMapping(value = "/public/categories", method = RequestMethod.GET)
     public ResponseEntity <List<Category>> getAllCategories(){
         List<Category> allCategories = categoryService.getAllCategories();
         return new ResponseEntity<>(allCategories, HttpStatus.OK) ;
@@ -39,14 +41,15 @@ public class CategoryController {
     //    }
 
 
-    @PostMapping("api/public/categories")
+//  @PostMapping("api/public/categories")
+    @RequestMapping(value = "/public/categories", method = RequestMethod.POST)
     public ResponseEntity<String> createCategory(@RequestBody Category category){
         categoryService.createCategory(category);
         return new ResponseEntity<>("category added successfully", HttpStatus.CREATED);
     }
 
     //http://localhost:8080/api/admin/categories/2
-    @DeleteMapping("/api/admin/categories/{categoryId}")
+    @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId){
 
         try {
@@ -57,7 +60,7 @@ public class CategoryController {
             }
         }
 
-    @PutMapping("/api/public/categories/{categoryId}")
+    @PutMapping("/public/categories/{categoryId}")
     public ResponseEntity<String> updateCategory(@RequestBody Category category,
                                                  @PathVariable Long categoryId){
     try{
