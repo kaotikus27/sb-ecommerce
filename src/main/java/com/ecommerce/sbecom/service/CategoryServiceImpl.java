@@ -1,6 +1,8 @@
 package com.ecommerce.sbecom.service;
 
 import com.ecommerce.sbecom.model.Category;
+import com.ecommerce.sbecom.repositories.CategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,23 +15,29 @@ import java.util.Optional;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    private List<Category> categories = new ArrayList<>();
+    //private List<Category> categories = new ArrayList<>();
+    //private Long nextId = 1L;
 
-    private Long nextId = 1L;
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+
 
     @Override
     public List<Category> getAllCategories() {
-        return categories;
+        return categoryRepository.findAll();
     }
 
     @Override
     public void createCategory(Category category) {
-        category.setCategoryId(nextId++);
-        categories.add(category);
+        //category.setCategoryId(nextId++);
+        categoryRepository.save(category);
     }
 
     @Override
     public String deleteCategory(Long categoryId) {
+
+        List<Category> categories = categoryRepository.findAll();
 
         Category category = categories.stream()
                 .filter(c-> c.getCategoryId().equals(categoryId))
@@ -38,12 +46,14 @@ public class CategoryServiceImpl implements CategoryService {
         if(category == null) {
                 return "Category not found";
         }
-        categories.remove(category);
+        categoryRepository.delete(category);
         return "successfully deleted";
     }
 
     @Override
     public Category updateCategory(Category category, Long categoryId) {
+
+        List<Category> categories = categoryRepository.findAll();
 
         Optional<Category> optionalCategory  = categories.stream()
                 .filter(c-> c.getCategoryId().equals(categoryId))
@@ -52,7 +62,8 @@ public class CategoryServiceImpl implements CategoryService {
         if(optionalCategory.isPresent()) {
             Category exsistingCategory = optionalCategory.get();
             exsistingCategory.setCategoryName(category.getCategoryName());
-            return exsistingCategory;
+            Category savedCategory = categoryRepository.save(exsistingCategory);
+            return savedCategory;
         } else{
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
         }
