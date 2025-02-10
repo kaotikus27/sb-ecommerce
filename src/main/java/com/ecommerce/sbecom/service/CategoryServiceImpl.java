@@ -1,5 +1,6 @@
 package com.ecommerce.sbecom.service;
 
+import com.ecommerce.sbecom.exceptions.ResourceNotFound;
 import com.ecommerce.sbecom.model.Category;
 import com.ecommerce.sbecom.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void createCategory(Category category) {
         //category.setCategoryId(nextId++);
+        Category savedCategory =
+                categoryRepository.findByCategoryName(category.getCategoryName());
+
         categoryRepository.save(category);
     }
 
@@ -40,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
         //List<Category> categories = categoryRepository.findAll();
 
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+                .orElseThrow(()-> new ResourceNotFound("Category", "CategoryId", categoryId));
 
 //        Category category = categories.stream()
 //                .filter(c-> c.getCategoryId().equals(categoryId))
