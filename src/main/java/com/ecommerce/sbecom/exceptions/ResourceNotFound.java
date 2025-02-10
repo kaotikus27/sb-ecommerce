@@ -2,7 +2,7 @@ package com.ecommerce.sbecom.exceptions;
 
 public class ResourceNotFound extends RuntimeException {
 
-    String resouceName;
+    String resourceName;
     String field;
     String fieldName;
     Long fieldId;
@@ -10,19 +10,17 @@ public class ResourceNotFound extends RuntimeException {
     public ResourceNotFound() {
     }
 
-    public ResourceNotFound(String resouceName, String field, String fieldName) {
-        super();
-        this.resouceName = resouceName;
+    public ResourceNotFound(String resourceName, String field, String fieldName) {
+        super(String.format("%s not found with %s: %s", resourceName, field, fieldName));
+        this.resourceName = resourceName;
         this.field = field;
         this.fieldName = fieldName;
     }
 
-    public ResourceNotFound(String resouceName, String field, Long fieldId) {
-        super(String.format("%s not found with %s: %s"), resouceName, field , fieldId);
-        this.resouceName = resouceName;
+    public ResourceNotFound(String resourceName, String field, Long fieldId) {
+        super(String.format("%s not found with %s: %d", resourceName, field, fieldId));
+        this.resourceName = resourceName;
         this.field = field;
         this.fieldId = fieldId;
     }
-
-
 }

@@ -30,6 +30,7 @@ public class MyGlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<String> myResourceNotFoundException(ResourceNotFound e){
 
+        return null;
     }
 
 }
