@@ -29,8 +29,8 @@ public class MyGlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<String> myResourceNotFoundException(ResourceNotFound e){
-
-        return null;
+        String message = e.getMessage();
+        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
 }
