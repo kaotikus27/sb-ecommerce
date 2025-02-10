@@ -1,5 +1,6 @@
 package com.ecommerce.sbecom.service;
 
+import com.ecommerce.sbecom.exceptions.APIException;
 import com.ecommerce.sbecom.exceptions.ResourceNotFound;
 import com.ecommerce.sbecom.model.Category;
 import com.ecommerce.sbecom.repositories.CategoryRepository;
@@ -34,7 +35,11 @@ public class CategoryServiceImpl implements CategoryService {
         //category.setCategoryId(nextId++);
         Category savedCategory =
                 categoryRepository.findByCategoryName(category.getCategoryName());
-
+        if(savedCategory != null)
+            throw new APIException
+                    ("Category with the name "
+                     + category.getCategoryName()
+                     + "Already exists ");
         categoryRepository.save(category);
     }
 
