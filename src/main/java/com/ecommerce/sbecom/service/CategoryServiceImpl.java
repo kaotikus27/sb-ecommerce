@@ -48,61 +48,49 @@ public class CategoryServiceImpl implements CategoryService {
 
     }
 
-    @Override
-    public void createCategory(Category category) {
 
-        Category savedCategory =
-                categoryRepository.findByCategoryName(category.getCategoryName());
-        if(savedCategory != null)
+    @Override
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+        Category category = modelMapper.map(categoryDTO, Category.class);
+
+        Category savedCategoryFromDB =
+                categoryRepository.findByCategoryName
+                        (category.getCategoryName());
+        if(savedCategoryFromDB != null)
             throw new APIException
                     ("Category with the name "
                      + category.getCategoryName()
                      + "Already exists ");
-        categoryRepository.save(category);
+
+        Category savedCategory = categoryRepository.save(category);
+
+        return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 
+
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
         //List<Category> categories = categoryRepository.findAll();
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(()->
                         new ResourceNotFound
                         ("Category", "CategoryId", categoryId));
-//        Category category = categories.stream()
-//                .filter(c-> c.getCategoryId().equals(categoryId))
-//                .findFirst()
-//                .orElseThrow( ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
-//        if(category == null) {
-//                return "Category not found";
-//        }
         categoryRepository.delete(category);
-        return "successfully deleted";
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
     @Override
-    public Category updateCategory(Category category, Long categoryId) {
-
-        //Optional<Category> saveCategoryOptional = categoryRepository.findById(categoryId);
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categoryId) {
 
         Category savedCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Category not found"));
 
+        Category category = modelMapper.map(categoryDTO, Category.class);
         category.setCategoryId(categoryId);
-        return categoryRepository.save(category);
-
-
-//        Optional<Category> optionalCategory  = categories.stream()
-//                .filter(c-> c.getCategoryId().equals(categoryId))
-//                .findFirst();
-//
-//        if(optionalCategory.isPresent()) {
-//            Category exsistingCategory = optionalCategory.get();
-//            exsistingCategory.setCategoryName(category.getCategoryName());
-//            Category savedCategory = categoryRepository.save(exsistingCategory);
-//            return savedCategory;
-//        } else{
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
-//        }
+        savedCategory = categoryRepository.save(category);
+        return modelMapper.map(savedCategory, CategoryDTO.class);
 
     }
 }

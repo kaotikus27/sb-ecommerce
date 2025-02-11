@@ -14,4 +14,6 @@ public class CategoryResponse {
 
     private List<CategoryDTO> content;
 
+
+
 }

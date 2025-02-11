@@ -1,6 +1,7 @@
 package com.ecommerce.sbecom.service;
 
 import com.ecommerce.sbecom.model.Category;
+import com.ecommerce.sbecom.payload.CategoryDTO;
 import com.ecommerce.sbecom.payload.CategoryResponse;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +13,12 @@ public interface CategoryService  {
 
     CategoryResponse getAllCategories();
 
-    void createCategory(Category category);
-
-    String deleteCategory(Long categoryId);
+    CategoryDTO createCategory(CategoryDTO categoryDTO);
 
 
-    Category updateCategory(Category category, Long categoryId);
+    CategoryDTO deleteCategory( Long categoryId);
+
+
+    CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categoryId);
 
 }
