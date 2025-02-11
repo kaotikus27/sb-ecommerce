@@ -3,6 +3,7 @@ package com.ecommerce.sbecom.controller;
 
 import com.ecommerce.sbecom.model.Category;
 
+import com.ecommerce.sbecom.payload.CategoryResponse;
 import com.ecommerce.sbecom.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,9 @@ public class CategoryController {
     //  http://localhost:8080/api/public/categories
     //  @GetMapping("api/public/categories")
     @RequestMapping(value = "/public/categories", method = RequestMethod.GET)
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> allCategories = categoryService.getAllCategories();
-        return new ResponseEntity<>(allCategories, HttpStatus.OK);
+    public ResponseEntity<CategoryResponse> getAllCategories() {
+        CategoryResponse categoryResponse = categoryService.getAllCategories();
+        return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
     //    public List<Category> getAllCategories(){
     //        return categoryService.getAllCategories();

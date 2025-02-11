@@ -3,6 +3,7 @@ package com.ecommerce.sbecom.service;
 import com.ecommerce.sbecom.exceptions.APIException;
 import com.ecommerce.sbecom.exceptions.ResourceNotFound;
 import com.ecommerce.sbecom.model.Category;
+import com.ecommerce.sbecom.payload.CategoryDTO;
 import com.ecommerce.sbecom.payload.CategoryResponse;
 import com.ecommerce.sbecom.repositories.CategoryRepository;
 import org.modelmapper.ModelMapper;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -29,9 +31,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getAllCategories() {
         List < Category > categories = categoryRepository.findAll();
+
         if(categories.isEmpty())
             throw new APIException("No category created till now");
-        return null;
+
+        List<CategoryDTO> categoryDTOS =
+                categories.stream()
+                .map(category -> modelMapper.map
+                (category, CategoryDTO.class))
+                .toList();
+
+        CategoryResponse categoryResponse = new CategoryResponse();
+
+        categoryResponse.setContent(categoryDTOS);
+        return categoryResponse;
+
     }
 
     @Override
