@@ -27,7 +27,10 @@ public class CategoryController {
 
 
     @GetMapping("/echo")
-    public ResponseEntity<String> echoMessage(@RequestParam(name = "message") String message){
+    public ResponseEntity<String> echoMessage(
+            @RequestParam(name = "message", required = false) String message
+    )
+    {
         return new ResponseEntity<>("Echoed message:"+ message,  HttpStatus.OK);
     }
 
@@ -38,10 +41,17 @@ public class CategoryController {
     }
 
     @RequestMapping(value = "/public/categories", method = RequestMethod.GET)
-    public ResponseEntity<CategoryResponse> getAllCategories() {
+    public ResponseEntity<CategoryResponse> getAllCategories(
+            @RequestParam(name = "paggeNumber") Integer pageNumber,
+            @RequestParam(name = "paggeSize") Integer pageSize)
+    {
         CategoryResponse categoryResponse = categoryService.getAllCategories();
         return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
+
+
+
+
 
 
     @PostMapping("/public/categories")
