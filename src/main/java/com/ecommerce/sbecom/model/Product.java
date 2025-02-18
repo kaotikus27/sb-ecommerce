@@ -21,9 +21,13 @@ public class Product {
 
     private String description;
 
+    private String image;
+
     private Integer quantity;
 
     private double price;
+
+    private double discount;
 
     private double specialPrice;
 
