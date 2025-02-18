@@ -4,7 +4,6 @@ package com.ecommerce.sbecom.service;
 import com.ecommerce.sbecom.exceptions.ResourceNotFound;
 import com.ecommerce.sbecom.model.Category;
 import com.ecommerce.sbecom.model.Product;
-import com.ecommerce.sbecom.payload.CategoryDTO;
 import com.ecommerce.sbecom.payload.ProductDTO;
 import com.ecommerce.sbecom.payload.ProductResponse;
 import com.ecommerce.sbecom.repositories.CategoryRepository;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -30,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductDTO addProduct(Long categoryId, Product product) {
+    public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
 
 
         Category category = categoryReposiory.findById(categoryId).orElseThrow(
@@ -38,6 +36,8 @@ public class ProductServiceImpl implements ProductService {
                         "Category",
                         "categoryId",
                         categoryId));
+
+        Product product = modelMapper.map(productDTO, Product.class);
 
         product.setImage("default image");
         product.setCategory(category);
@@ -107,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO updateProduct(Long productId, Product product) {
+    public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
         //get existing product from DB
 
         Product productFromDb = productRepository.findById(productId)
@@ -115,6 +115,8 @@ public class ProductServiceImpl implements ProductService {
                         "Product",
                         "productId",
                         productId));
+
+        Product product = modelMapper.map(productDTO, Product.class);
 
         //update product info with the one in request body
         productFromDb.setProductName(product.getProductName());
