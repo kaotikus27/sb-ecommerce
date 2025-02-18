@@ -5,6 +5,7 @@ import com.ecommerce.sbecom.model.Product;
 import com.ecommerce.sbecom.payload.ProductDTO;
 import com.ecommerce.sbecom.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class ProductController {
 
        ProductDTO productDTO =  productService.addProduct(categoryId, product);
 
-       return productDTO;
+       return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
 
     }
 
