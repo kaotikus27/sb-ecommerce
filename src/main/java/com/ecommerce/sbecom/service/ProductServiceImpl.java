@@ -4,6 +4,7 @@ package com.ecommerce.sbecom.service;
 import com.ecommerce.sbecom.exceptions.ResourceNotFound;
 import com.ecommerce.sbecom.model.Category;
 import com.ecommerce.sbecom.model.Product;
+import com.ecommerce.sbecom.payload.CategoryDTO;
 import com.ecommerce.sbecom.payload.ProductDTO;
 import com.ecommerce.sbecom.payload.ProductResponse;
 import com.ecommerce.sbecom.repositories.CategoryRepository;
@@ -127,6 +128,20 @@ public class ProductServiceImpl implements ProductService {
         Product savedProduct = productRepository.save(productFromDb);
 
         return modelMapper.map(savedProduct, ProductDTO.class);
+    }
+
+    @Override
+    public ProductDTO deleteCategory(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(()->
+                        new ResourceNotFound
+                                (
+                                        "Product",
+                                        "productId",
+                                        productId));
+        productRepository.delete(product);
+        return modelMapper.map(product, ProductDTO.class);
+
     }
 
 
