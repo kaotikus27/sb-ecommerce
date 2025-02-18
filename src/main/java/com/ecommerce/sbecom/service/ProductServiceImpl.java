@@ -5,11 +5,15 @@ import com.ecommerce.sbecom.exceptions.ResourceNotFound;
 import com.ecommerce.sbecom.model.Category;
 import com.ecommerce.sbecom.model.Product;
 import com.ecommerce.sbecom.payload.ProductDTO;
+import com.ecommerce.sbecom.payload.ProductResponse;
 import com.ecommerce.sbecom.repositories.CategoryRepository;
 import com.ecommerce.sbecom.repositories.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -47,5 +51,41 @@ public class ProductServiceImpl implements ProductService {
         Product savedProduct = productRepository.save(product);
 
         return modelMapper.map(savedProduct, ProductDTO.class);
+    }
+
+    @Override
+    public ProductResponse getAllProducts() {
+
+       List<Product> products =  productRepository.findAll();
+       List<ProductDTO> productDTOS = products.stream()
+               .map(product -> modelMapper.map(product, ProductDTO.class))
+               .toList();
+
+       ProductResponse productResponse = new ProductResponse();
+       productResponse.setContent(productDTOS);
+
+        return productResponse;
+    }
+
+    @Override
+    public ProductResponse searchByCategory(Long categoryId) {
+
+        Category category = categoryReposiory.findById(categoryId).orElseThrow(
+                ()-> new ResourceNotFound(
+                        "Category",
+                        "categoryId",
+                        categoryId));
+
+        List<Product> products =
+                productRepository.findByCategoryOrderByPriceAsc(category);
+
+        List<ProductDTO> productDTOS = products.stream()
+                .map(product -> modelMapper.map(product, ProductDTO.class))
+                .toList();
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setContent(productDTOS);
+
+        return productResponse;
     }
 }
