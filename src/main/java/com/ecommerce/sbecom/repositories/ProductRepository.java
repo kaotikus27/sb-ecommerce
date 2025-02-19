@@ -2,6 +2,8 @@ package com.ecommerce.sbecom.repositories;
 
 import com.ecommerce.sbecom.model.Category;
 import com.ecommerce.sbecom.model.Product;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategoryOrderByPriceAsc(Category category);
 
     List<Product> findByProductNameLikeIgnoreCase(String keyword);
+
+    Product findByProductName( String productName);
 }

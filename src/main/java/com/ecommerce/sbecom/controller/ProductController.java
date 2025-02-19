@@ -6,6 +6,7 @@ import com.ecommerce.sbecom.payload.CategoryDTO;
 import com.ecommerce.sbecom.payload.ProductDTO;
 import com.ecommerce.sbecom.payload.ProductResponse;
 import com.ecommerce.sbecom.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +20,14 @@ import java.io.IOException;
 public class ProductController {
 
 
+
     @Autowired
     ProductService productService;
 
 
+
     @PostMapping("/admin/categories/{categoryId}/product")
-    public ResponseEntity<ProductDTO> addProduct(@RequestBody  ProductDTO productDTO,
+    public ResponseEntity<ProductDTO> addProduct(@Valid  @RequestBody  ProductDTO productDTO,
                                                  @PathVariable Long categoryId){
 
        ProductDTO savedProductDTO =  productService.addProduct(categoryId, productDTO);

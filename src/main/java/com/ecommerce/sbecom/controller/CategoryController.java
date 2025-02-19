@@ -24,8 +24,6 @@ import java.util.List;
 public class CategoryController {
 
 
-    private final CategoryService categoryService;
-
 
     @GetMapping("/echo")
     public ResponseEntity<String> echoMessage(
@@ -34,6 +32,9 @@ public class CategoryController {
     {
         return new ResponseEntity<>("Echoed message:"+ message,  HttpStatus.OK);
     }
+
+    @Autowired
+    private final CategoryService categoryService;
 
     @Autowired
     public CategoryController(

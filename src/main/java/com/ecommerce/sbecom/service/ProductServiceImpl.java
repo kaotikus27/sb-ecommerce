@@ -1,6 +1,7 @@
 package com.ecommerce.sbecom.service;
 
 
+import com.ecommerce.sbecom.exceptions.APIException;
 import com.ecommerce.sbecom.exceptions.ResourceNotFound;
 import com.ecommerce.sbecom.model.Category;
 import com.ecommerce.sbecom.model.Product;
@@ -10,6 +11,7 @@ import com.ecommerce.sbecom.repositories.CategoryRepository;
 import com.ecommerce.sbecom.repositories.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,9 +38,14 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private FileService fileService;
 
+    @Value("${project.image}")
+    private String path;
+
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
+
+
 
 
         Category category = categoryReposiory.findById(categoryId).orElseThrow(
@@ -47,17 +54,31 @@ public class ProductServiceImpl implements ProductService {
                         "categoryId",
                         categoryId));
 
+
+
         Product product = modelMapper.map(productDTO, Product.class);
+
+        Product savedProductFromDB =
+                productRepository.findByProductName
+                        (product.getProductName());
+
+
+        //check if product is already present or not
+        if(savedProductFromDB != null)
+            throw new APIException
+                    ("Product with the name "
+                            + product.getProductName()
+                            + "Already exists ");
 
         product.setImage("default image");
         product.setCategory(category);
-
         //Special price formula =  price - ((discount/100) * price)
         double specialPrice =
                 product.getPrice() -
                         ((product.getDiscount() * 0.01) * product.getPrice());
 
         product.setSpecialPrice(specialPrice);
+
 
         Product savedProduct = productRepository.save(product);
 
@@ -68,6 +89,12 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse getAllProducts() {
 
        List<Product> products =  productRepository.findAll();
+
+
+        //check if product is empty or not
+       if(products.isEmpty())
+           throw new APIException("No Products created till now");
+
        List<ProductDTO> productDTOS = products.stream()
                .map(product -> modelMapper.map(product, ProductDTO.class))
                .toList();
@@ -79,7 +106,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse searchByCategory(Long categoryId) {
+    public ProductResponse searchByCategory( Long categoryId) {
+
 
         Category category = categoryReposiory.findById(categoryId).orElseThrow(
                 ()-> new ResourceNotFound(
@@ -90,11 +118,18 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products =
                 productRepository.findByCategoryOrderByPriceAsc(category);
 
+
+
         List<ProductDTO> productDTOS = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
 
+
+
         ProductResponse productResponse = new ProductResponse();
+
+
+
         productResponse.setContent(productDTOS);
 
         return productResponse;
@@ -102,6 +137,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse searchByKeyword(String keyword) {
+
+
+        //check if product is empty or not
 
         List<Product> products =
                 productRepository.
@@ -120,6 +158,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
+
+
+
         //get existing product from DB
 
         Product productFromDb = productRepository.findById(productId)
@@ -169,7 +210,7 @@ public class ProductServiceImpl implements ProductService {
                         productId));
         // Upload the image to server
         // Get the file name of uploaded image
-        String path = "images/";
+
         String fileName = fileService.uploadImage(path, image);
 
         // Updating the new file name to the product

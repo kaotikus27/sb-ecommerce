@@ -81,6 +81,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category savedCategoryFromDB =
                 categoryRepository.findByCategoryName
                         (category.getCategoryName());
+
         if(savedCategoryFromDB != null)
             throw new APIException
                     ("Category with the name "
@@ -113,7 +114,9 @@ public class CategoryServiceImpl implements CategoryService {
                                 "Category not found"));
 
         Category category = modelMapper.map(categoryDTO, Category.class);
+
         category.setCategoryId(categoryId);
+
         savedCategory = categoryRepository.save(category);
         return modelMapper.map(savedCategory, CategoryDTO.class);
 
