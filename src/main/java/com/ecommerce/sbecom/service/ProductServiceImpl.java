@@ -45,44 +45,44 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
 
-
-
-
         Category category = categoryReposiory.findById(categoryId).orElseThrow(
                 ()-> new ResourceNotFound(
                         "Category",
                         "categoryId",
                         categoryId));
 
+        //check if empty or not
+        boolean isProductNotPresent = true;
+        List<Product> products = category.getProducts();
+        //for (int i = 0; i < products.size(); i++)
+        for (Product value: products) {
+            //if(products.get(i).getProductName().equals(productDTO.getProductName()))
+            if(value.getProductName().equals(productDTO.getProductName())) {
+                isProductNotPresent = false;
+                break;
+            }
+        }
+
+        if(isProductNotPresent) {
+            Product product = modelMapper.map(productDTO, Product.class);
+
+            product.setImage("default image");
+            product.setCategory(category);
+            //Special price formula =  price - ((discount/100) * price)
+            double specialPrice =
+                    product.getPrice() -
+                            ((product.getDiscount() * 0.01) * product.getPrice());
+
+            product.setSpecialPrice(specialPrice);
+
+            Product savedProduct = productRepository.save(product);
+
+            return modelMapper.map(savedProduct, ProductDTO.class);
+        } else {
+            throw new APIException("product already exists");
+        }
 
 
-        Product product = modelMapper.map(productDTO, Product.class);
-
-        Product savedProductFromDB =
-                productRepository.findByProductName
-                        (product.getProductName());
-
-
-        //check if product is already present or not
-        if(savedProductFromDB != null)
-            throw new APIException
-                    ("Product with the name "
-                            + product.getProductName()
-                            + "Already exists ");
-
-        product.setImage("default image");
-        product.setCategory(category);
-        //Special price formula =  price - ((discount/100) * price)
-        double specialPrice =
-                product.getPrice() -
-                        ((product.getDiscount() * 0.01) * product.getPrice());
-
-        product.setSpecialPrice(specialPrice);
-
-
-        Product savedProduct = productRepository.save(product);
-
-        return modelMapper.map(savedProduct, ProductDTO.class);
     }
 
     @Override
@@ -158,8 +158,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
-
-
 
         //get existing product from DB
 
