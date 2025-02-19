@@ -33,6 +33,10 @@ public class ProductServiceImpl implements ProductService {
     private ModelMapper modelMapper;
 
 
+    @Autowired
+    private FileService fileService;
+
+
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
 
@@ -166,7 +170,7 @@ public class ProductServiceImpl implements ProductService {
         // Upload the image to server
         // Get the file name of uploaded image
         String path = "images/";
-        String fileName = uploadImage(path, image);
+        String fileName = fileService.uploadImage(path, image);
 
         // Updating the new file name to the product
         productFromDb.setImage(fileName);
@@ -178,34 +182,7 @@ public class ProductServiceImpl implements ProductService {
         return modelMapper.map(updateProduct, ProductDTO.class);
     }
 
-    private String uploadImage(String path, MultipartFile file) throws IOException {
-        // Get the filenames of the current / original file
-        String originalFilename = file.getOriginalFilename();
 
-        // Generate a unique file name -- using UUID
-        String randomId = UUID.randomUUID().toString();
-
-        //leo.jpg --> 1234 --> 1234.jpg
-        String fileName = randomId
-                .concat(originalFilename
-                .substring(originalFilename.lastIndexOf('.')));
-
-        // initializing path
-        String filePath = path + File.separator + fileName;
-
-        // Check if path exist and create if not create new
-        File folder = new File(path);
-        if(!folder.exists())
-            folder.mkdirs();
-
-        // Upload to server
-        Files.copy(file.getInputStream(), Paths.get(filePath));
-
-
-        // Returning file name
-        return fileName;
-
-    }
 
 
 }
