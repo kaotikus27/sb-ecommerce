@@ -191,7 +191,7 @@ public class ProductServiceImpl implements ProductService {
                 .substring(originalFilename.lastIndexOf('.')));
 
         // initializing path
-        String filePath = path + File.pathSeparator + fileName;
+        String filePath = path + File.separator + fileName;
 
         // Check if path exist and create if not create new
         File folder = new File(path);
