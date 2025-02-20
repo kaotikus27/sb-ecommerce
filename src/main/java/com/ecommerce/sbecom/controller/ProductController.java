@@ -1,6 +1,7 @@
 package com.ecommerce.sbecom.controller;
 
 
+import com.ecommerce.sbecom.config.AppConstants;
 import com.ecommerce.sbecom.model.Product;
 import com.ecommerce.sbecom.payload.CategoryDTO;
 import com.ecommerce.sbecom.payload.ProductDTO;
@@ -27,7 +28,8 @@ public class ProductController {
 
 
     @PostMapping("/admin/categories/{categoryId}/product")
-    public ResponseEntity<ProductDTO> addProduct(@Valid  @RequestBody  ProductDTO productDTO,
+    public ResponseEntity<ProductDTO> addProduct(@Valid
+                                                 @RequestBody  ProductDTO productDTO,
                                                  @PathVariable Long categoryId){
 
        ProductDTO savedProductDTO =  productService.addProduct(categoryId, productDTO);
@@ -38,8 +40,22 @@ public class ProductController {
 
 
     @GetMapping("/public/products")
-    public ResponseEntity<ProductResponse> getAllProducts() {
-        ProductResponse productResponse = productService.getAllProducts();
+    public ResponseEntity<ProductResponse> getAllProducts(
+            @RequestParam(name = "pageNumber",
+                    defaultValue = AppConstants.PAGE_NUMBER,
+                    required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize",
+                    defaultValue =AppConstants.PAGE_SIZE,
+                    required = false) Integer pageSize,
+            @RequestParam(name = "sortBy" ,
+                    defaultValue = AppConstants.SORT_PRODUCTS_BY,
+                    required = false) String sortBy,
+            @RequestParam(name = "sortOrder",
+                    defaultValue = AppConstants.SORT_CATEGORIES_DIR,
+                    required = false) String sortOrder
+            ) {
+        ProductResponse productResponse = productService.getAllProducts(
+                pageNumber, pageSize, sortBy, sortOrder);
 
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
 

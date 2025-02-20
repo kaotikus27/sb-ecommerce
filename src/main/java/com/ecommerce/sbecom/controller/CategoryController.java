@@ -66,9 +66,6 @@ public class CategoryController {
 
 
 
-
-
-
     @PostMapping("/public/categories")
     public ResponseEntity<CategoryDTO> createCategory(
             @Valid @RequestBody CategoryDTO categoryDTO) {
