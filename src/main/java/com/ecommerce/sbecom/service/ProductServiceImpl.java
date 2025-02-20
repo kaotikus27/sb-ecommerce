@@ -143,6 +143,10 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> products = pageProduct.getContent();
 
+        if(products.size() == 0) {
+            throw new APIException(category.getCategoryName() +" Category does not exist ");
+        }
+
         List<ProductDTO> productDTOS = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
@@ -160,23 +164,39 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse searchByKeyword(
-            String keyword
+            String keyword,
+            Integer pageNumber,
+            Integer pageSize,
+            String sortBy,
+            String sortOrder
             ) {
 
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
-        //check if product is empty or not
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
-        List<Product> products =
-                productRepository.
-                        findByProductNameLikeIgnoreCase
-                                ('%' + keyword + '%');
+        Page<Product> pageProduct = productRepository.findByProductNameLikeIgnoreCase
+                ('%' + keyword + '%', pageDetails);
+
+        List<Product> products = pageProduct.getContent();
 
         List<ProductDTO> productDTOS = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
 
+        if(products.size() == 0) {
+            throw new APIException("product not found with keyword " + keyword);
+        }
+
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
+        productResponse.setPageNumber(pageProduct.getNumber());
+        productResponse.setPageSize(pageProduct.getSize());
+        productResponse.setTotalElements(pageProduct.getTotalElements());
+        productResponse.setTotalPages(pageProduct.getTotalPages());
+        productResponse.setLastPage(pageProduct.isLast());
 
         return productResponse;
     }
