@@ -119,8 +119,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse searchByCategory( Long categoryId) {
-
+    public ProductResponse searchByCategory(
+            Long categoryId,
+            Integer pageNumber,
+            Integer pageSize,
+            String sortBy,
+            String sortOrder) {
 
         Category category = categoryReposiory.findById(categoryId).orElseThrow(
                 ()-> new ResourceNotFound(
@@ -128,28 +132,36 @@ public class ProductServiceImpl implements ProductService {
                         "categoryId",
                         categoryId));
 
-        List<Product> products =
-                productRepository.findByCategoryOrderByPriceAsc(category);
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
+        Page<Product> pageProduct = productRepository.findByCategoryOrderByPriceAsc
+                (category, pageDetails);
+
+        List<Product> products = pageProduct.getContent();
 
         List<ProductDTO> productDTOS = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
 
-
-
         ProductResponse productResponse = new ProductResponse();
 
-
-
         productResponse.setContent(productDTOS);
-
+        productResponse.setPageNumber(pageProduct.getNumber());
+        productResponse.setPageSize(pageProduct.getSize());
+        productResponse.setTotalElements(pageProduct.getTotalElements());
+        productResponse.setTotalPages(pageProduct.getTotalPages());
+        productResponse.setLastPage(pageProduct.isLast());
         return productResponse;
     }
 
     @Override
-    public ProductResponse searchByKeyword(String keyword) {
+    public ProductResponse searchByKeyword(
+            String keyword
+            ) {
 
 
         //check if product is empty or not
