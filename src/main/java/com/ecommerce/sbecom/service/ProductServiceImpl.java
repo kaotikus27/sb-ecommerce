@@ -143,13 +143,14 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> products = pageProduct.getContent();
 
-        if(products.size() == 0) {
-            throw new APIException(category.getCategoryName() +" Category does not exist ");
-        }
-
         List<ProductDTO> productDTOS = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
+
+
+        if(products.size() == 0) {
+            throw new APIException(category.getCategoryName() +" Category does not exist ");
+        }
 
         ProductResponse productResponse = new ProductResponse();
 
