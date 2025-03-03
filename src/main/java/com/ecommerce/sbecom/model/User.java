@@ -17,7 +17,12 @@ import java.util.Set;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "users" ,
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = "username"),
+            @UniqueConstraint(columnNames = "email")
+        }
+)
 public class User {
 
     @Id
@@ -27,15 +32,18 @@ public class User {
 
     @NotBlank
     @Size(min = 3, max = 50)
+    @Column(name= "username")
     private String username;
 
     @NotBlank
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 120)
+    @Column(name = "password")
     private String password;
 
     @NotBlank
     @Size(max = 50)
     @Email
+    @Column(name= "email")
     private String email;
 
     public User(Long userId, String username, String password, String email) {
@@ -53,6 +61,7 @@ public class User {
                  joinColumns = @JoinColumn(name = "user_id"),
                  inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
 
 
 }
