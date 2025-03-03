@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -32,5 +35,19 @@ public class User {
     @Size(max = 50)
     @Email
     private String email;
+
+    public User(Long userId, String username, String password, String email) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE } ,
+                 fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role" ,
+                 joinColumns = @JoinColumn(name = "user_id"),
+                 inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
 }
