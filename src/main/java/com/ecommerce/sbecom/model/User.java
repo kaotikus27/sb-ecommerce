@@ -55,7 +55,9 @@ public class User {
 
     @Setter
     @Getter
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE } ,
+    @ManyToMany(cascade =
+            { CascadeType.PERSIST,
+                    CascadeType.MERGE } ,
                  fetch = FetchType.EAGER)
     @JoinTable(name = "user_role" ,
                  joinColumns = @JoinColumn(name = "user_id"),
@@ -63,5 +65,10 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
 
+    @OneToMany(mappedBy = "user", cascade =
+            {CascadeType.PERSIST,
+                    CascadeType.MERGE},
+                orphanRemoval = true)
+    private Set<Product> products;
 
 }
