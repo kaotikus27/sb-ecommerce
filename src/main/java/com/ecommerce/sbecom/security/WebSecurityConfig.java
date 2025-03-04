@@ -1,4 +1,4 @@
-package com.ecommerce.sbecom.config;
+package com.ecommerce.sbecom.security;
 
 import com.ecommerce.sbecom.security.services.UserDetailsServiceImpl;
 import com.ecommerce.sbecom.sercurity.jwt.AuthEntryPointJwt;
@@ -10,7 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -20,21 +19,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Configuration
 @EnableWebSecurity
 //@EnableMethodSecurity
 public class WebSecurityConfig {
-
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
 
     @Autowired
     private AuthEntryPointJwt unathorizedHandler;
-
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
 
 
     @Bean
@@ -43,7 +37,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
         authProvider.setUserDetailsService(userDetailsService);
@@ -82,7 +76,8 @@ public class WebSecurityConfig {
                                 .requestMatchers("/images/**").permitAll()
                                 .anyRequest().authenticated()
                 );
-        http.authenticationProvider(authenticationProvider);
+
+        http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokeFilter(),
                 UsernamePasswordAuthenticationFilter.class);
 
