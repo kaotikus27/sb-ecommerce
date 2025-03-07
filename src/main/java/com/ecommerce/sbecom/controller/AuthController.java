@@ -5,6 +5,8 @@ import com.ecommerce.sbecom.model.Role;
 import com.ecommerce.sbecom.model.User;
 import com.ecommerce.sbecom.repositories.UserRepository;
 import com.ecommerce.sbecom.security.request.LoginRequest;
+import com.ecommerce.sbecom.security.request.SignupRequest;
+import com.ecommerce.sbecom.security.response.MessageResponse;
 import com.ecommerce.sbecom.security.response.UserInfoResponse;
 import com.ecommerce.sbecom.security.services.UserDetailsImpl;
 import com.ecommerce.sbecom.sercurity.jwt.JwtUtils;
@@ -75,7 +77,7 @@ public class AuthController {
 
         @PostMapping("/signup")
         public ResponseEntity<?> registerUser(
-                @Valid @RequestBody SignUpRequest signUpRequest
+                @Valid @RequestBody SignupRequest signUpRequest
         )
         {
             //checking if user exist
@@ -94,23 +96,35 @@ public class AuthController {
                 ));
             }
 
-
+            // use and email is unique
             //create new user's account
-            User user = new User(signUpRequest.getUsername(),
+            User user = new User(
+                    signUpRequest.getUsername(),
                                  signUpRequest.getEmail(),
-                                 encoder.encode(signUpRequest.getPassword()));
+                                 encoder.encode(signUpRequest.getPassword())
+                    );
 
-            //
+            //-- accept "admin"
+            //hold role string format
             Set<String> strRoles = signUpRequest.getRole();
+
+            // accept ROLE_ADMIN
+            // will hold the role for new user -- role entity format
             Set<Role> roles = new HashSet<>();
 
+
+            //mapping the role into the request into the role
             if( strRoles == null){
+                //user role default
                 Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
                         .orEleseThrow(()-> new RuntimeException(
                                 "Error: Role is not found."
                         ));
                 roles.add(userRole);
+
             }else{
+                //if the user pass role then it will throw it in role_admin
+                //every role is mapped using switch case
                 strRoles.forEach(role ->{
                    switch (role){
                        case "admin":
